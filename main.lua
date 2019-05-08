@@ -18,8 +18,8 @@ function love.load()
   player1Score = 0
   player2Score = 0
 
-  Player1 = Paddle(30, 30, 10, 70)
-  Player2 = Paddle(WINDOW_WIDTH-30, WINDOW_HEIGHT-100, 10, 70)
+  player1 = Paddle(30, 30, 10, 70)
+  player2 = Paddle(WINDOW_WIDTH-30, WINDOW_HEIGHT-100, 10, 70)
 
   ball = Ball(WINDOW_WIDTH/2 - 5, WINDOW_HEIGHT/2 - 5, 10, 10)
 
@@ -32,7 +32,7 @@ function love.update(dt)
   elseif love.keyboard.isDown('s') then
       player1.dy = PADDLE_SPEED
   else
-      player1.dy = 0
+    player1.dy = 0
   end
   if love.keyboard.isDown('up') then
       player2.dy = -PADDLE_SPEED
