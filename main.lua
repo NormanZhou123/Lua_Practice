@@ -23,11 +23,21 @@ function love.load()
 
   ball = Ball(WINDOW_WIDTH/2 - 5, WINDOW_HEIGHT/2 - 5, 10, 10)
 
+  servingPlayer = 1
+
   gameState = 'start'
 end
 
 function love.update(dt)
-  if gameState == 'play' then
+  if gameState == 'serve' then
+    ball.dy = math.random(-150, 150)
+    if servingPlayer == 1 then
+      ball.dx = math.random(240, 300)
+    else
+      ball.dx = -math.random(240, 300)
+    end
+
+  elseif gameState == 'play' then
     if ball:collides(player1) then
       ball.dx = -ball.dx * 1.03
       ball.x = player1.x + 10
@@ -58,6 +68,20 @@ function love.update(dt)
     end
   end
 
+  if ball.x < 0 then
+    servingPlayer = 1
+    player2Score = player2Score + 1
+    ball:reset()
+    gameState = 'serve'
+  end
+
+  if ball.x > WINDOW_WIDTH then
+    servingPlayer = 2
+    player1Score = player1Score + 1
+    ball:reset()
+    gameState = 'serve'
+  end
+
   if love.keyboard.isDown('w') then
     player1.dy = -PADDLE_SPEED
   elseif love.keyboard.isDown('s') then
@@ -65,6 +89,7 @@ function love.update(dt)
   else
     player1.dy = 0
   end
+
   if love.keyboard.isDown('up') then
       player2.dy = -PADDLE_SPEED
   elseif love.keyboard.isDown('down') then
@@ -85,23 +110,23 @@ function love.keypressed(key)
     love.event.quit()
   elseif key == 'enter' or key == 'return' then
     if gameState =='start' then
+      gameState = 'serve'
+    elseif gameState == 'serve' then
       gameState = 'play'
-    else
-      gameState = 'start'
-      ball:reset()
     end
   end
 end
 
 function love.draw()
-  --love.graphics.clear(40, 45, 52, 255)
   if gameState == 'start' then
     love.graphics.printf('Get your ass ready!',0,30,WINDOW_WIDTH,'center')
-  else
-    love.graphics.printf('GO!', 0, 30, WINDOW_WIDTH, 'center')
+  elseif gameState == 'serve' then
+    love.graphics.printf('Player ' .. tostring(servingPlayer) .. "'s serve!", 0, 30, WINDOW_WIDTH, 'center')
+  elseif gameState == 'play' then
+
   end
   love.graphics.print(tostring(player1Score), WINDOW_WIDTH / 2 - 250, WINDOW_HEIGHT/3)
-  love.graphics.print(tostring(player1Score), WINDOW_WIDTH / 2 + 220, WINDOW_HEIGHT/3)
+  love.graphics.print(tostring(player2Score), WINDOW_WIDTH / 2 + 220, WINDOW_HEIGHT/3)
   player1:render()
   player2:render()
   ball:render()
