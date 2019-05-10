@@ -66,20 +66,31 @@ function love.update(dt)
       ball.y = WINDOW_HEIGHT - 10
       ball.dy = -ball.dy
     end
-  end
 
-  if ball.x < 0 then
-    servingPlayer = 1
-    player2Score = player2Score + 1
-    ball:reset()
-    gameState = 'serve'
-  end
 
-  if ball.x > WINDOW_WIDTH then
-    servingPlayer = 2
-    player1Score = player1Score + 1
-    ball:reset()
-    gameState = 'serve'
+    if ball.x < 0 then
+      servingPlayer = 1
+      player2Score = player2Score + 1
+      if player2Score == 10 then
+        winningPlayer = 2
+        gameState = 'done'
+      else
+        gameState = 'serve'
+        ball:reset()
+      end
+    end
+
+    if ball.x > WINDOW_WIDTH then
+      servingPlayer = 2
+      player1Score = player1Score + 1
+      if player1Score == 10 then
+        winningPlayer = 1
+        gameState = 'done'
+      else
+        gameState = 'serve'
+        ball:reset()
+      end
+    end
   end
 
   if love.keyboard.isDown('w') then
@@ -113,6 +124,18 @@ function love.keypressed(key)
       gameState = 'serve'
     elseif gameState == 'serve' then
       gameState = 'play'
+
+    elseif gameState == 'done' then
+      gameState = 'serve'
+      ball:reset()
+
+      player1Score = 0
+      player2Score = 0
+      if winningPlayer == 1 then
+        servingPlayer = 2
+      else
+        servingPlayer = 1
+      end
     end
   end
 end
@@ -123,7 +146,10 @@ function love.draw()
   elseif gameState == 'serve' then
     love.graphics.printf('Player ' .. tostring(servingPlayer) .. "'s serve!", 0, 30, WINDOW_WIDTH, 'center')
   elseif gameState == 'play' then
-
+  elseif gameState == 'done' then
+    love.graphics.printf('Player ' .. tostring(winningPlayer) .. ' wins!',
+        0, 30, WINDOW_WIDTH, 'center')
+    love.graphics.printf('Press Enter to restart!', 0, 50, WINDOW_WIDTH, 'center')
   end
   love.graphics.print(tostring(player1Score), WINDOW_WIDTH / 2 - 250, WINDOW_HEIGHT/3)
   love.graphics.print(tostring(player2Score), WINDOW_WIDTH / 2 + 220, WINDOW_HEIGHT/3)
